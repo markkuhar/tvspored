@@ -9,4 +9,5 @@ import java.util.ArrayList;
 public class ChannelData {
     public ArrayList<String> channelNames;
     public ArrayList<String> channelLinks;
+    public ArrayList<ProgrammeData> currentShow;
 }

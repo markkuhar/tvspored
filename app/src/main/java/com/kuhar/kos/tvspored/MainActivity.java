@@ -41,13 +41,20 @@ public class MainActivity extends AppCompatActivity {
                 ChannelData cd = new ChannelData();
                 cd.channelNames = xmlParse.getChannelNames();
                 cd.channelLinks = xmlParse.getChannelLinks();
+                cd.currentShow  = xmlParse.getCurrentShow();
                 return cd;
             }
 
             @Override
             protected void onPostExecute(final ChannelData channel) {
-                ArrayAdapter adapter = new ArrayAdapter<String>(MainActivity.this,
-                        R.layout.listview_row, channel.channelNames);
+                ArrayList<MainItem> items = new ArrayList<MainItem>();
+                for (int i = 0; i < channel.channelNames.size(); i++){
+                    items.add(new MainItem(channel.channelNames.get(i),
+                            channel.currentShow.get(i).title,
+                            channel.currentShow.get(i).startTime,
+                            channel.currentShow.get(i).endTime));
+                }
+                CustomAdapter adapter = new CustomAdapter(MainActivity.this, items);
                 ListView listView = (ListView) findViewById(R.id.channelList);
                 listView.setAdapter(adapter);
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
