@@ -1,23 +1,15 @@
 package com.kuhar.kos.tvspored;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.VolumeProviderCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import okhttp3.OkHttpClient;
 
@@ -45,8 +37,22 @@ public class MainActivity extends AppCompatActivity {
                 return cd;
             }
 
+            private ProgressDialog mDialog;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+                mDialog = new ProgressDialog(MainActivity.this);
+                mDialog.setMessage("Nalaganje");
+                mDialog.show();
+                mDialog.setCancelable(false);
+            }
+
             @Override
             protected void onPostExecute(final ChannelData channel) {
+                mDialog.dismiss();
+
                 ArrayList<MainItem> items = new ArrayList<MainItem>();
                 for (int i = 0; i < channel.channelNames.size(); i++){
                     items.add(new MainItem(channel.channelNames.get(i),

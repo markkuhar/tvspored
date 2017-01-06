@@ -205,7 +205,8 @@ public class XMLParse {
 
     public ArrayList<ProgrammeData> getSeznamOddaj(String url) {
         parseChannel(url);
-        seznamOddaj.remove(0);
+        if (!seznamOddaj.isEmpty())
+            seznamOddaj.remove(0);
         return seznamOddaj;
     }
 

@@ -1,6 +1,8 @@
 package com.kuhar.kos.tvspored;
 
 import android.app.ActionBar;
+import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -8,7 +10,10 @@ import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,11 +42,27 @@ import java.util.TreeSet;
 
 public class ChannelActivity extends AppCompatActivity {
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.channel_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                finish();
+                return true;
+            }
+            case R.id.action_refresh: {
+                String ItemLink = getIntent().getStringExtra("channelClicked");
+                refresh(ItemLink);
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +70,18 @@ public class ChannelActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_channel);
 
-        String ItemLink = getIntent().getStringExtra("channelClicked");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 
         setTitle(getIntent().getStringExtra("channelName"));
+        String ItemLink = getIntent().getStringExtra("channelClicked");
 
+        refresh(ItemLink);
+
+    }
+
+    public void refresh(String ItemLink){
         new AsyncTask<String, Void, ArrayList>() {
 
             @Override
@@ -62,15 +91,26 @@ public class ChannelActivity extends AppCompatActivity {
                 return seznamOddaj;
             }
 
+            private ProgressDialog mDialog;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+                mDialog = new ProgressDialog(ChannelActivity.this);
+                mDialog.setMessage("Nalaganje");
+                mDialog.show();
+                mDialog.setCancelable(false);
+            }
+
             @Override
             protected void onPostExecute(final ArrayList seznamOddaj) {
                 super.onPostExecute(seznamOddaj);
+                mDialog.dismiss();
 
                 Collections.sort(seznamOddaj);
                 final ArrayList programmeData = new ArrayList();
-                System.out.println(seznamOddaj.size());
                 for (int i = 0; i < seznamOddaj.size() - 1; i++) {
-                    System.out.println(((ProgrammeData) seznamOddaj.get(i)).getStartTime());
                     String desc = ((ProgrammeData) seznamOddaj.get(i)).description;
                     desc = trimString(desc, 10);
                     programmeData.add(new MainItem(((ProgrammeData) seznamOddaj.get(i)).title,
@@ -93,9 +133,6 @@ public class ChannelActivity extends AppCompatActivity {
                 });
             }
         }.execute(ItemLink);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     public static String trimString(String string, int length) {
@@ -120,41 +157,5 @@ public class ChannelActivity extends AppCompatActivity {
             }
         }
         return -1;
-    }
-
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("Channel Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
     }
 }
