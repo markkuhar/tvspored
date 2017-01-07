@@ -5,8 +5,11 @@ import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.IntegerRes;
+import android.support.v4.database.DatabaseUtilsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +21,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +46,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class ChannelActivity extends AppCompatActivity {
+
+    DatabaseConnector db;
+    private static final String TAG = "Error log";
+    private static final MainActivity main = new MainActivity();
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,7 +76,7 @@ public class ChannelActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        db = new DatabaseConnector(this);
         setContentView(R.layout.activity_channel);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -77,11 +86,46 @@ public class ChannelActivity extends AppCompatActivity {
         setTitle(getIntent().getStringExtra("channelName"));
         String ItemLink = getIntent().getStringExtra("channelClicked");
 
+        //this.deleteDatabase("Spored.db");
         refresh(ItemLink);
+        String ime = getIntent().getStringExtra("channelName");
+        Cursor res = db.getData(ime);
+        CheckBox cb = (CheckBox)findViewById(R.id.favorite);
+        if(res.getCount() == 0){
+            if (db.insertData(ime, 0)) {
+                System.out.println("Dodano!");
+            }
+        }
+        else {
+            while (res.moveToNext()){
+                int val = Integer.parseInt(res.getString(0));
+                System.out.println("Vrednost " + val);
+                if(val == 1){
+                    cb.setChecked(true);
+                }
+                else {
+                    cb.setChecked(false);
+                }
+            }
+        }
 
+        cb.setOnCheckedChangeListener(new ChangeClicked(ime,db,cb,ChannelActivity.this));
+
+        //isFavorite();
+        System.out.println(cb.isChecked());
     }
 
+
     public void refresh(String ItemLink){
+        /*
+        Cursor res = db.getAllData();
+        StringBuffer sb = new StringBuffer();
+        while (res.moveToNext()){
+            sb.append("Ime programa " + res.getString(0) + " Favorites " + res.getString(1) + "\n");
+        }
+        System.out.println(sb);
+        */
+
         new AsyncTask<String, Void, ArrayList>() {
 
             @Override

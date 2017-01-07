@@ -1,5 +1,7 @@
 package com.kuhar.kos.tvspored;
 
+import android.widget.CheckBox;
+
 import java.util.ArrayList;
 
 /**

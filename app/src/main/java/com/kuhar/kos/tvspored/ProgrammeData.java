@@ -1,5 +1,7 @@
 package com.kuhar.kos.tvspored;
 
+import android.widget.CheckBox;
+
 /**
  * Created by Mark on 29. 12. 2016.
  */
@@ -15,6 +17,8 @@ public class ProgrammeData implements Comparable<ProgrammeData> {
     public String endTime;
     public String title;
     public String description;
+
+
 
     public void notFound(){
         sortNumber = "N/A";
