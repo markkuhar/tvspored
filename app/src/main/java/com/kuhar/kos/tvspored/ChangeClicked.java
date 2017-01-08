@@ -45,7 +45,7 @@ public class ChangeClicked implements CompoundButton.OnCheckedChangeListener {
             }
 
         }
-        Intent intent = new Intent("INTENT_NAME").putExtra("spremenjeno", "true");
-        LocalBroadcastManager.getInstance(ca).sendBroadcast(intent);
+        //Intent intent = new Intent("INTENT_NAME").putExtra("spremenjeno", "true");
+        //LocalBroadcastManager.getInstance(ca).sendBroadcast(intent);
     }
 }

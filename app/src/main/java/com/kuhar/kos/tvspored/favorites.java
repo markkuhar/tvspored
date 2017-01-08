@@ -26,6 +26,7 @@ public class favorites extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Priljubljeni");
         setContentView(R.layout.activity_favorites);
         String listSerializedToJson = getIntent().getExtras().getString("fav");
         //System.out.println("lallaa " + listSerializedToJson);
@@ -39,10 +40,17 @@ public class favorites extends AppCompatActivity {
         listView.setAdapter(adapter);
 
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter("INTENT_NAME"));
+    //    LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter("INTENT_NAME"));
 
 
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        RefreshFavorites rf = new RefreshFavorites(favorites.this);
+        rf.refreshFavorites();
+    }
+
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

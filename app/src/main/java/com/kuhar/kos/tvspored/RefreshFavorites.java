@@ -33,9 +33,20 @@ public class RefreshFavorites {
 
             private ProgressDialog mDialog;
 
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+                mDialog = new ProgressDialog(act);
+                mDialog.setMessage("Nalaganje");
+                mDialog.show();
+                mDialog.setCancelable(false);
+            }
+
 
             @Override
             protected void onPostExecute(final ChannelData channel) {
+                mDialog.dismiss();
                 ArrayList<MainItem> favorites_all = new ArrayList<MainItem>();
                 DatabaseConnector db = new DatabaseConnector(act);
                 Cursor res;
