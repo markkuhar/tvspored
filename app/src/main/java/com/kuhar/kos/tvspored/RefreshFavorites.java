@@ -49,7 +49,7 @@ public class RefreshFavorites {
 
                         if (var == 1) {
 //                            System.out.println("BRISEM " + channel.channelNames.get(i) + " " + var);
-                            favorites_all.add(new MainItem(channel.channelNames.get(i), channel.currentShow.get(i).title, channel.currentShow.get(i).startTime, channel.currentShow.get(i).endTime));
+                            favorites_all.add(new MainItem(channel.channelNames.get(i), channel.currentShow.get(i).title, channel.currentShow.get(i).startTime));
                             //channel.channelNames.remove(i);
                             //channel.currentShow.remove(i);
                             //channel.channelLinks.remove(i);

@@ -41,13 +41,15 @@ public class CustomAdapter extends ArrayAdapter<MainItem> {
         TextView labelView = (TextView) rowView.findViewById(R.id.label);
         TextView valueView = (TextView) rowView.findViewById(R.id.value);
         TextView startTimeView = (TextView) rowView.findViewById(R.id.startTime);
-        TextView endTimeView = (TextView) rowView.findViewById(R.id.endTime);
+        //TextView endTimeView = (TextView) rowView.findViewById(R.id.endTime);
         // 4. Set the text for textView
+
+
 
         labelView.setText(itemsArrayList.get(position).getTitle());
         valueView.setText(itemsArrayList.get(position).getDescription());
         startTimeView.setText(itemsArrayList.get(position).getStartTime());
-        endTimeView.setText(itemsArrayList.get(position).getEndTime());
+        //endTimeView.setText(itemsArrayList.get(position).getEndTime());
         //favorites.setChecked(itemsArrayList.get(position).);
 
         // 5. retrn rowView

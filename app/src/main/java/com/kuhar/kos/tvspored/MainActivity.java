@@ -4,19 +4,18 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
@@ -29,13 +28,30 @@ public class MainActivity extends AppCompatActivity {
     private static ArrayList<MainItem> favorites_all;
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_showFavorites: {
+                startFavorites();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         db = new DatabaseConnector(this);
         setTitle("TV spored");
-        //this.deleteDatabase("Spored.db");
         client = new OkHttpClient();
 
         new AsyncTask<Void, Void, ChannelData>() {
@@ -72,29 +88,26 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("IMENA " + channel.channelNames.get(i));
                     while (res.moveToNext()) {
                         int var = Integer.parseInt(res.getString(0));
-                        //System.out.println("TO " + channel.channelNames.get(i) + " " + var);
 
                         if (var == 1) {
-//                            System.out.println("BRISEM " + channel.channelNames.get(i) + " " + var);
-                            favorites_all.add(new MainItem(channel.channelNames.get(i), channel.currentShow.get(i).title, channel.currentShow.get(i).startTime, channel.currentShow.get(i).endTime));
-                            //channel.channelNames.remove(i);
-                            //channel.currentShow.remove(i);
-                            //channel.channelLinks.remove(i);
+                            favorites_all.add(new MainItem(channel.channelNames.get(i),
+                                channel.currentShow.get(i).title,
+                                channel.currentShow.get(i).startTime));
                         }
                     }
                     res.close();
 
                 }
 
-                for (int i = 0; i < favorites_all.size(); i++)
-                    System.out.println("IZPISUJEM  " + favorites_all.get(i).getTitle());
-
                 ArrayList<MainItem> items = new ArrayList<MainItem>();
                 for (int i = 0; i < channel.channelNames.size(); i++){
+                    String startTime = channel.currentShow.get(i).startTime;
+                    if (startTime.contains(":")){
+                        startTime = startTime.substring(0, startTime.lastIndexOf(':'));
+                    }
                     items.add(new MainItem(channel.channelNames.get(i),
                             channel.currentShow.get(i).title,
-                            channel.currentShow.get(i).startTime,
-                            channel.currentShow.get(i).endTime));
+                            startTime));
 
                 }
                 //favorites.addAll(items);
@@ -115,19 +128,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }.execute();
 
-
-        /*
-        RelativeLayout ll = (RelativeLayout)findViewById(R.id.ll);
-        for(int i = 0; i < ll.getChildCount(); i++) {
-            View v = ll.getChildAt(i);
-            if(v instanceof CheckBox) {
-                ((CheckBox)v).setChecked(true);
-            }
-        }
-        */
-
     }
-    public void testFunkcija(View v){
+    public void startFavorites(){
         Intent intent = new Intent(getBaseContext(), favorites.class);
         String listSerializedToJson = new Gson().toJson(favorites_all);
         intent.putExtra("fav", listSerializedToJson);

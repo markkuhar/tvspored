@@ -12,11 +12,6 @@ public class MainItem {
         return startTime;
     }
 
-    public String getEndTime() {
-        return endTime;
-    }
-
-
     private String startTime;
     private String endTime;
 
@@ -36,11 +31,10 @@ public class MainItem {
         this.description = description;
     }
 
-    public MainItem(String title, String description, String startTime, String endTime) {
+    public MainItem(String title, String description, String startTime) {
         super();
         this.title = title;
         this.description = description;
         this.startTime = startTime;
-        this.endTime = endTime;
     }
 }

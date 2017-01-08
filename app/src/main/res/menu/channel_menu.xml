@@ -3,6 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_favorites"
+        android:icon="@drawable/ic_favorites"
+        android:title="@string/favorites"
+        android:actionViewClass="android.widget.CheckBox"
+        android:checkable="true"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/action_refresh"
         android:icon="@drawable/ic_refresh"
         android:title="@string/refresh"
