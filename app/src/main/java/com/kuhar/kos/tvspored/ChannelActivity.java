@@ -1,6 +1,7 @@
 package com.kuhar.kos.tvspored;
 
 import android.app.ProgressDialog;
+import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -38,11 +39,14 @@ public class ChannelActivity extends AppCompatActivity implements ChannelFragmen
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private DatabaseConnector db;
+    private String ime;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private Drawable d;
 
     @Override
     public void onFragmentInteraction(Uri uri){
@@ -55,6 +59,7 @@ public class ChannelActivity extends AppCompatActivity implements ChannelFragmen
         setContentView(R.layout.activity_tabbed);
 
         setTitle(getIntent().getStringExtra("channelName"));
+        ime = getIntent().getStringExtra("channelName");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -88,6 +93,26 @@ public class ChannelActivity extends AppCompatActivity implements ChannelFragmen
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_menu, menu);
+        MenuItem zv = menu.findItem(R.id.action_favorites);
+        d = zv.getIcon();
+        db = new DatabaseConnector(this);
+        String ime = getIntent().getStringExtra("channelName");
+        Cursor res = db.getData(ime);
+        if (res.getCount() == 0) {
+            if (db.insertData(ime, 0)) {
+                System.out.println("Dodano!");
+            }
+        } else {
+            while (res.moveToNext()) {
+                int val = Integer.parseInt(res.getString(0));
+                System.out.println("Vrednost " + val);
+                if (val == 1) {
+                    d.setColorFilter(getResources().getColor(R.color.rumena), PorterDuff.Mode.SRC_ATOP);
+                } else {
+                    d.setColorFilter(getResources().getColor(R.color.bela), PorterDuff.Mode.SRC_ATOP);
+                }
+            }
+        }
         return true;
     }
 
@@ -96,6 +121,8 @@ public class ChannelActivity extends AppCompatActivity implements ChannelFragmen
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        Drawable drawable = item.getIcon();
+        Cursor res = db.getData(ime);
         switch (item.getItemId()) {
             case android.R.id.home: {
                 finish();
@@ -107,9 +134,9 @@ public class ChannelActivity extends AppCompatActivity implements ChannelFragmen
             }
             case R.id.action_favorites: {
                 item.setChecked(!item.isChecked());
-                Drawable drawable = item.getIcon();
                 if (item.isChecked()) {
 
+                    db.updateData(ime,1);
 
                     /* Sm pridš če KLIKNŠ */
 
@@ -118,6 +145,7 @@ public class ChannelActivity extends AppCompatActivity implements ChannelFragmen
                     drawable.setColorFilter(getResources().getColor(R.color.rumena), PorterDuff.Mode.SRC_ATOP);
                     /* Do sm */
                 } else{
+                    db.updateData(ime,0);
 
 
                     /* Sm pridš če ODKLIKAŠ */

@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/tvsporedgit.iml" filepath="$PROJECT_DIR$/tvsporedgit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spored.iml" filepath="$PROJECT_DIR$/spored.iml" />
     </modules>
   </component>
 </project>
