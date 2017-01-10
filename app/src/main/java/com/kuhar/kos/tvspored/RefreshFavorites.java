@@ -1,9 +1,11 @@
 package com.kuhar.kos.tvspored;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -47,23 +49,29 @@ public class RefreshFavorites {
             @Override
             protected void onPostExecute(final ChannelData channel) {
                 mDialog.dismiss();
-                ArrayList<MainItem> favorites_all = new ArrayList<MainItem>();
+                final ArrayList<MainItem> favorites_all = new ArrayList<MainItem>();
+                final ArrayList<String> favorites_names = new ArrayList<String>();
+                final ArrayList<String> favorites_links = new ArrayList<String>();
                 DatabaseConnector db = new DatabaseConnector(act);
                 Cursor res;
                 for(int i = 0; i < channel.channelNames.size(); i++){
                     String ime = channel.channelNames.get(i);
                     res = db.getData(ime);
-                    //System.out.println("IMENA " + channel.channelNames.get(i));
                     while (res.moveToNext()) {
                         int var = Integer.parseInt(res.getString(0));
-                        //System.out.println("TO " + channel.channelNames.get(i) + " " + var);
-
                         if (var == 1) {
-//                            System.out.println("BRISEM " + channel.channelNames.get(i) + " " + var);
-                            favorites_all.add(new MainItem(channel.channelNames.get(i), channel.currentShow.get(i).title, channel.currentShow.get(i).startTime));
-                            //channel.channelNames.remove(i);
-                            //channel.currentShow.remove(i);
-                            //channel.channelLinks.remove(i);
+                            String channelName = channel.channelNames.get(i);
+                            String title = channel.currentShow.get(i).title;
+                            String startTime = ((ProgrammeData) channel.currentShow.get(i)).startTime;
+                            if (startTime.contains(":")){
+                                startTime = startTime.substring(0, startTime.lastIndexOf(':'));
+                            }
+                            favorites_all.add(new MainItem(channelName,
+                                    title,
+                                    startTime,
+                                    channel.currentShow.get(i).title));
+                            favorites_names.add(channelName);
+                            favorites_links.add(channel.channelLinks.get(i));
                         }
                     }
                     res.close();
@@ -72,6 +80,16 @@ public class RefreshFavorites {
                 CustomAdapter adapter = new CustomAdapter(act, favorites_all);
                 ListView listView = (ListView) act.findViewById(R.id.channelContentListview);
                 listView.setAdapter(adapter);
+
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(act, ChannelActivity.class);
+                        intent.putExtra("channelName", favorites_names.get((int)id));
+                        intent.putExtra("channelClicked", favorites_links.get((int)id));
+                        act.startActivity(intent);
+                    }
+                });
 
 
             }

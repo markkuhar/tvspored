@@ -79,6 +79,7 @@ public class ChannelActivity extends AppCompatActivity implements ChannelFragmen
 
     }
 
+    boolean favChecked = false;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,6 +90,7 @@ public class ChannelActivity extends AppCompatActivity implements ChannelFragmen
         d = zv.getIcon();
         db = new DatabaseConnector(this);
         String ime = getIntent().getStringExtra("channelName");
+        String id = getIntent().getStringExtra("listViewPos");
         Cursor res = db.getData(ime);
         if (res.getCount() == 0) {
             if (db.insertData(ime, 0)) {
@@ -100,8 +102,10 @@ public class ChannelActivity extends AppCompatActivity implements ChannelFragmen
                 System.out.println("Vrednost " + val);
                 if (val == 1) {
                     d.setColorFilter(getResources().getColor(R.color.rumena), PorterDuff.Mode.SRC_ATOP);
+                    favChecked = true;
                 } else {
                     d.setColorFilter(getResources().getColor(R.color.bela), PorterDuff.Mode.SRC_ATOP);
+                    favChecked = false;
                 }
             }
         }
@@ -113,7 +117,6 @@ public class ChannelActivity extends AppCompatActivity implements ChannelFragmen
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        Drawable drawable = item.getIcon();
         Cursor res = db.getData(ime);
         switch (item.getItemId()) {
             case android.R.id.home: {
@@ -125,27 +128,16 @@ public class ChannelActivity extends AppCompatActivity implements ChannelFragmen
                 refresh(ItemLink);
             }
             case R.id.action_favorites: {
+                Drawable drawable = item.getIcon();
                 item.setChecked(!item.isChecked());
-                if (item.isChecked()) {
-
+                if (item.isChecked() && !favChecked) {
                     db.updateData(ime,1);
-
-                    /* Sm pridš če KLIKNŠ */
-
-
-                    /* Tole je za pobarvat zvezdico */
+                    favChecked = true;
                     drawable.setColorFilter(getResources().getColor(R.color.rumena), PorterDuff.Mode.SRC_ATOP);
-                    /* Do sm */
                 } else{
                     db.updateData(ime,0);
-
-
-                    /* Sm pridš če ODKLIKAŠ */
-
-
-                    /* Tole je za pobarvat zvezdico */
+                    favChecked = false;
                     drawable.setColorFilter(getResources().getColor(R.color.bela), PorterDuff.Mode.SRC_ATOP);
-                    /* Do sm */
                 }
                 break;
             }

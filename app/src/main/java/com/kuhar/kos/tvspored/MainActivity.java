@@ -85,14 +85,14 @@ public class MainActivity extends AppCompatActivity {
                 for(int i = 0; i < channel.channelNames.size(); i++){
                     String ime = channel.channelNames.get(i);
                     res = db.getData(ime);
-                    System.out.println("IMENA " + channel.channelNames.get(i));
                     while (res.moveToNext()) {
                         int var = Integer.parseInt(res.getString(0));
 
                         if (var == 1) {
                             favorites_all.add(new MainItem(channel.channelNames.get(i),
                                 channel.currentShow.get(i).title,
-                                channel.currentShow.get(i).startTime));
+                                channel.currentShow.get(i).startTime,
+                                    channel.currentShow.get(i).endTime));
                         }
                     }
                     res.close();
@@ -105,13 +105,15 @@ public class MainActivity extends AppCompatActivity {
                     if (startTime.contains(":")){
                         startTime = startTime.substring(0, startTime.lastIndexOf(':'));
                     }
-                    items.add(new MainItem(channel.channelNames.get(i),
+                    MainItem m = new MainItem(channel.channelNames.get(i),
                             channel.currentShow.get(i).title,
-                            startTime));
-
+                            startTime,
+                            channel.currentShow.get(i).endTime);
+                    m.setNextShowStartTime(channel.currentShow.get(i).nextShowStart);
+                    items.add(m);
                 }
                 //favorites.addAll(items);
-                CustomAdapter adapter = new CustomAdapter(MainActivity.this, items);
+                CustomAdapterMain adapter = new CustomAdapterMain(MainActivity.this, items);
                 ListView listView = (ListView) findViewById(R.id.channelList);
                 listView.setAdapter(adapter);
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

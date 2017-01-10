@@ -84,7 +84,7 @@ public class XMLParse {
                 XmlPullParser xpp = factory.newPullParser();
                 xpp.setInput(new StringReader(xml));
 
-                String startTime, endTime, startTimeTemp = "", endTimeTemp = "";
+                String startTime, endTime, startTimeTemp = "", endTimeTemp = "", nextShowStart = "20:00:00";
 
                 boolean isTITLE = false,
                         existance = false;
@@ -92,16 +92,12 @@ public class XMLParse {
                 ProgrammeData pdCurr = new ProgrammeData();
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     pdCurr = new ProgrammeData();
-                    String sortNumber = "";
                     if (eventType == XmlPullParser.START_TAG) {
                         String tagName = xpp.getName();
                         if (tagName.equalsIgnoreCase("programme")) {
-                            sortNumber = xpp.getAttributeValue(null, "SORT_NUMBER");
                             startTime = xpp.getAttributeValue(null, "BILLEDSTART");
                             endTime = xpp.getAttributeValue(null, "BILLEDEND");
-                            SimpleDateFormat sdfCompare = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             if(validateDate(currDate + " " + startTime, currDateTime, currDate + " " + endTime)){
-                                //pdCurr.title = channelLinks.get(i);
                                 startTimeTemp = startTime;
                                 endTimeTemp = endTime;
                                 existance = true;
@@ -121,10 +117,12 @@ public class XMLParse {
                 if(!existance){
                     ProgrammeData pdTemp = new ProgrammeData();
                     pdTemp.notFound();
+                    pdTemp.nextShowStart = nextShowStart;
                     currentShow.add(pdTemp);
                 } else{
                     pdCurr.startTime = startTimeTemp;
                     pdCurr.endTime = endTimeTemp;
+                    pdCurr.nextShowStart = nextShowStart;
                     currentShow.add(pdCurr);
                     existance = false;
                 }
@@ -163,6 +161,8 @@ public class XMLParse {
                         pd.endTime = xpp.getAttributeValue(null, "BILLEDEND");
                     } else if (tagName.equalsIgnoreCase("title")) {
                         isTITLE = true;
+                    } else if (tagName.equalsIgnoreCase("eptitle")){
+                        isTITLE = true;
                     } else if (tagName.equalsIgnoreCase("SYNOPSIS_OPIS")) {
                         isSYNOPSIS_OPIS = true;
                     } else if(tagName.equalsIgnoreCase("slo")){
@@ -170,7 +170,12 @@ public class XMLParse {
                             pd.title = xpp.nextText();
                             isTITLE = false;
                         } else if (isSYNOPSIS_OPIS){
-                            pd.description = xpp.nextText();
+                            String desc = xpp.nextText();
+                            if (desc.equals("*****")){
+                                pd.description = "Ni opisa";
+                            } else{
+                                pd.description = desc;
+                            }
                             isSYNOPSIS_OPIS = false;
                         }
                     }

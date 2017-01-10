@@ -1,5 +1,6 @@
 package com.kuhar.kos.tvspored;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
@@ -88,19 +89,37 @@ public class ChannelFragment extends Fragment {
                 Collections.sort(seznamOddaj);
                 final ArrayList programmeData = new ArrayList();
                 for (int i = 0; i < seznamOddaj.size() - 1; i++) {
+                    String title = ((ProgrammeData) seznamOddaj.get(i)).title;
+                    title = trimTitle(title, 26);
                     String desc = ((ProgrammeData) seznamOddaj.get(i)).description;
                     desc = trimString(desc, 10);
                     String startTime = ((ProgrammeData) seznamOddaj.get(i)).getStartTime();
                     startTime = startTime.substring(0, startTime.lastIndexOf(':'));
-                    programmeData.add(new MainItem(((ProgrammeData) seznamOddaj.get(i)).title,
+                    programmeData.add(new MainItem(title,
                             desc,
-                            startTime));
+                            startTime,
+                            ((ProgrammeData) seznamOddaj.get(i)).endTime));
                 }
 
                 CustomAdapter adapter = new CustomAdapter(getActivity(), programmeData);
                 ListView listView = (ListView) getView().findViewById(R.id.tabListView);
                 if (listView != null){
                     listView.setAdapter(adapter);
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            String titleDialog = ((ProgrammeData) seznamOddaj.get((int) id)).title;
+                            String descDialog = ((ProgrammeData) seznamOddaj.get((int) id)).description;
+                            if (descDialog == null){
+                                descDialog = "Ni opisa";
+                            }
+                            new AlertDialog.Builder(getContext())
+                                    .setTitle(titleDialog)
+                                    .setMessage(descDialog)
+                                    .setNegativeButton(android.R.string.cancel, null)
+                                    .show();
+                        }
+                    });
                     listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                         @Override
                         public boolean onItemLongClick(AdapterView<?> arg0, View view,
@@ -119,9 +138,6 @@ public class ChannelFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        /*TextView tx = new TextView(getActivity());
-        tx.setText(getArguments().getString(ARG_PARAM1));
-        return tx;*/
         return inflater.inflate(R.layout.fragment_tabbed, null);
     }
 
@@ -150,7 +166,7 @@ public class ChannelFragment extends Fragment {
     }
 
     private static String trimString(String string, int length) {
-        if (string == null || string.trim().isEmpty() || !string.contains(" ")) {
+        if (string == null || string.trim().isEmpty()) {
             return "Ni opisa";
         }
         int countSpaces = string.length() - string.replace(" ", "").length();
@@ -173,16 +189,16 @@ public class ChannelFragment extends Fragment {
         return -1;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    private String trimTitle(String title, int n){
+        if (title != null){
+            if (title.length() < n){
+                return title;
+            }
+            return title.substring(0, n) + "...";
+        }
+        return "Ne morem parsat";
+    }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

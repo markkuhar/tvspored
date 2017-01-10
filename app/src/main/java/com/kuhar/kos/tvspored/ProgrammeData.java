@@ -17,6 +17,7 @@ public class ProgrammeData implements Comparable<ProgrammeData> {
     public String endTime;
     public String title;
     public String description;
+    public String nextShowStart;
 
 
 
@@ -25,7 +26,7 @@ public class ProgrammeData implements Comparable<ProgrammeData> {
         startTime = "N/A";
         endTime = "N/A";
         title = "Trenutno se ne predavaja nobena oddaja";
-        description = "Not found";
+        description = "Ni opisa";
     }
 
     @Override
